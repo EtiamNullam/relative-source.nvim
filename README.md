@@ -1,6 +1,8 @@
 # relative-source.nvim
 
-This plugin will let you easily source `lua` and `vimrc` files relative to current script (or to current file if not running in a script).
+This `neovim` plugin will let you easily source files relative to current script or to current file if not running in a script.
+
+It's useful for creating structurized config spanning across multiple `lua` and `vimrc` files.
 
 ### Compared to `lua require()`:
 - no caching
