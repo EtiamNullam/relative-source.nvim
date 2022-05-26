@@ -1,18 +1,50 @@
 local M = {}
 
-function M.source_files(files_to_source)
-  local script_directory = vim.fn.expand('<sfile>:p:h')
+local separators = {
+  command = '|',
+  path = '/',
+}
 
-  local is_called_from_script = script_directory
-    and string.len(script_directory) ~= 0
+---@param script_directory string|nil
+local function is_called_from_script(script_directory)
+  return script_directory and string.len(script_directory) ~= 0
+    or false
+end
 
-  local origin = is_called_from_script and script_directory
-    or vim.fn.expand('%:p:h')
+---@return string script_directory
+local function get_script_directory()
+  return vim.fn.expand('<sfile>:p:h')
+end
 
-  local source_relative_command_prefix = 'source ' .. origin .. '/'
-  local source_files_command = source_relative_command_prefix .. table.concat(files_to_source, '|' .. source_relative_command_prefix)
+---@return string parent_directory
+local function get_parent_directory()
+  return vim.fn.expand('%:p:h')
+end
 
-  vim.api.nvim_command(source_files_command)
+local function find_origin()
+  local script_directory = get_script_directory()
+
+  return is_called_from_script(script_directory) and script_directory
+    or get_parent_directory()
+end
+
+---@param origin string
+---@param paths string[]
+---@return string command
+local function assemble_command(origin, paths)
+  local prefix = 'source ' .. origin .. separators.path
+
+  return prefix .. table.concat(paths, separators.command .. prefix)
+end
+
+---@param paths string[]
+function M.source_files(paths)
+  local command = assemble_command(
+    find_origin(),
+    paths
+  )
+
+  vim.api.nvim_command(command)
 end
 
 return M
