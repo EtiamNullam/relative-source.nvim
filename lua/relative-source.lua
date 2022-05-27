@@ -5,27 +5,28 @@ local separators = {
   path = '/',
 }
 
----@param script_directory string|nil
-local function is_called_from_script(script_directory)
-  return script_directory and string.len(script_directory) ~= 0
-    or false
-end
-
----@return string script_directory
+---@return string
 local function get_script_directory()
   return vim.fn.expand('<sfile>:p:h')
 end
 
----@return string parent_directory
+---@return string
 local function get_parent_directory()
   return vim.fn.expand('%:p:h')
 end
 
+---@param string string
+---@return boolean
+local function is_null_or_empty(string)
+  return not string or string == ''
+end
+
+---@return string
 local function find_origin()
   local script_directory = get_script_directory()
 
-  return is_called_from_script(script_directory) and script_directory
-    or get_parent_directory()
+  return is_null_or_empty(script_directory) and get_parent_directory()
+    or script_directory
 end
 
 ---@param origin string
