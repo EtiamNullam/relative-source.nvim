@@ -39,13 +39,19 @@ local function assemble_command(origin, paths)
 end
 
 ---@param paths string[]
-function M.source_files(paths)
+function M.source(paths)
   local command = assemble_command(
     find_origin(),
     paths
   )
 
   vim.api.nvim_command(command)
+end
+
+---@param paths string[]
+---@deprecated use `require('relative-source').source(paths)` instead
+function M.source_files(paths)
+  M.source(paths)
 end
 
 return M
