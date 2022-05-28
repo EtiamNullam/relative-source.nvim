@@ -4,6 +4,8 @@ This `neovim` plugin will let you easily source files relative to current script
 
 It's useful for creating structurized config spanning across multiple `lua` and `vimrc` files.
 
+It will continue to next file if any error occurs while sourcing and error message will be shown via `vim.notify`.
+
 ### Compared to `lua require()`:
 - no caching
 - relative paths
@@ -41,7 +43,7 @@ Place `relative-source.lua` in directory:
   - `lua`
 
     ```lua
-    require('relative-source').source_files {
+    require('relative-source').source {
       'activate-plugins.vimrc',
       'setup-colorscheme.lua',
       'plugins/configure-lsp.lua',
@@ -51,7 +53,7 @@ Place `relative-source.lua` in directory:
 
     ```viml
     lua <<END
-      require('relative-source').source_files {
+      require('relative-source').source {
         'activate-plugins.vimrc',
         'setup-colorscheme.lua',
         'plugins/configure-lsp.lua',

@@ -5,6 +5,38 @@ local separators = {
   path = '/',
 }
 
+---@param message string
+local function log_error(message)
+  vim.notify(
+    'relative-source: ' .. message,
+    vim.log.levels.WARN
+  )
+end
+
+---@param origin string
+---@return string
+local function assemble_command_prefix(origin)
+  return 'source ' .. origin .. separators.path
+end
+
+---@param path string
+---@param result any
+---@return string
+local function assemble_source_error_message(path, result)
+  local message = type(result) == 'string' and result
+    or vim.inspect(result)
+
+  return 'Failed to source "' .. path .. '"\n' .. message
+end
+
+---@param path string
+---@param result any
+local function log_source_error(path, result)
+  local message = assemble_source_error_message(path, result)
+
+  log_error(message)
+end
+
 ---@return string
 local function get_script_directory()
   return vim.fn.expand('<sfile>:p:h')
@@ -29,23 +61,33 @@ local function find_origin()
     or script_directory
 end
 
----@param origin string
----@param paths string[]
----@return string command
-local function assemble_command(origin, paths)
-  local prefix = 'source ' .. origin .. separators.path
+---@param command_prefix string
+---@param path string
+---@return boolean success
+local function try_source_file(command_prefix, path)
+  local command = command_prefix .. path
+  local success, result = pcall(vim.cmd, command)
 
-  return prefix .. table.concat(paths, separators.command .. prefix)
+  if not success then
+    log_source_error(path, result)
+  end
+
+  return success
+end
+
+---@param command_prefix string
+---@param paths string[]
+local function source_files(command_prefix, paths)
+  for _, path in pairs(paths) do
+    try_source_file(command_prefix, path)
+  end
 end
 
 ---@param paths string[]
 function M.source(paths)
-  local command = assemble_command(
-    find_origin(),
-    paths
-  )
+  local command_prefix = assemble_command_prefix(find_origin())
 
-  vim.api.nvim_command(command)
+  source_files(command_prefix, paths)
 end
 
 ---@param paths string[]
