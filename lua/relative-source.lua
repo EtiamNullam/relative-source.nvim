@@ -142,14 +142,19 @@ end
 ---@param origin string
 ---@param patterns string[]
 local function source_patterns(origin, patterns)
+  local processed_files = {
+  }
   for _, pattern in pairs(patterns) do
     local file_paths = is_absolute(pattern)
       and expand_absolute_pattern(pattern)
       or expand_relative_pattern(origin, pattern)
 
     if #file_paths ~= 0 then
-      for _, path in pairs(file_paths) do
-        try_source_file(path)
+      for _, file_path in pairs(file_paths) do
+        if not processed_files[file_path] then
+          try_source_file(file_path)
+          processed_files[file_path] = true
+        end
       end
     else
       log_error(assemble_no_matches_error_message(pattern))
