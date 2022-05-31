@@ -100,7 +100,11 @@ end
 ---@param pattern string
 ---@return string[] file_paths
 local function expand_relative_pattern(origin, pattern)
-  return find_files(assemble_relative_path(origin, pattern))
+  pattern = string.gsub(pattern, '^%.%/', '')
+
+  local relative_path = assemble_relative_path(origin, pattern)
+
+  return find_files(relative_path)
 end
 
 ---@return string
@@ -126,7 +130,7 @@ end
 ---@return boolean success
 local function try_source_file(file_path)
   local command = 'source ' .. file_path
-  local success, result = pcall(vim.cmd, command)
+  local success, result = pcall(vim.api.nvim_command, command)
 
   if not success then
     log_source_error(file_path, result)
