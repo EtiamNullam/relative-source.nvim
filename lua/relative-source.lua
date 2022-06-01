@@ -182,8 +182,6 @@ end
 
 ---@param patterns string[]
 ---@deprecated use `require('relative-source').source(patterns)` instead
-function M.source_files(patterns)
-  M.source(patterns)
-end
+M.source_files = M.source
 
 return M
