@@ -119,7 +119,7 @@ end
 
 ---@return string
 local function find_current_file_parent_directory()
-  return find_file('%:p')
+  return find_file('%:p:h')
 end
 
 ---@return string
