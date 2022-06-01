@@ -108,7 +108,7 @@ local function expand_relative_pattern(origin, pattern)
 end
 
 ---@return string
-local function get_script_directory()
+local function find_script_directory()
   return find_file('<sfile>:p:h')
 end
 
@@ -118,16 +118,16 @@ local function find_script_file_path()
 end
 
 ---@return string
-local function find_origin_file_path()
+local function find_current_file_parent_directory()
   return find_file('%:p')
 end
 
 ---@return string
 local function find_origin_directory()
-  local script_directory = get_script_directory()
+  local script_directory = find_script_directory()
 
   return is_null_or_empty(script_directory)
-    and get_parent_directory()
+    and find_current_file_parent_directory()
     or script_directory
 end
 
@@ -148,7 +148,7 @@ end
 ---@param origin_file_path string
 ---@param patterns string[]
 local function source_patterns(origin_directory, origin_file_path, patterns)
-  local processed_files = {
+  local touched_file_paths = {
     [origin_file_path] = true
   }
 
@@ -159,10 +159,11 @@ local function source_patterns(origin_directory, origin_file_path, patterns)
 
     if #file_paths ~= 0 then
       for _, file_path in pairs(file_paths) do
-        if not processed_files[file_path] then
+        if not touched_file_paths[file_path] then
           try_source_file(file_path)
-          processed_files[file_path] = true
         end
+
+        touched_file_paths[file_path] = true
       end
     else
       log_error(assemble_no_matches_error_message(pattern))
@@ -174,7 +175,7 @@ end
 function M.source(patterns)
   source_patterns(
     find_origin_directory(),
-    find_origin_file_path(),
+    find_script_file_path(),
     patterns
   )
 end
