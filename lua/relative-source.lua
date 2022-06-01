@@ -144,6 +144,19 @@ local function try_source_file(file_path)
   return success
 end
 
+local function source_file_paths(file_paths, touched_file_paths)
+  for _, file_path in pairs(file_paths) do
+    local is_valid_to_source = vim.fn.isdirectory(file_path) == 0
+      and not touched_file_paths[file_path]
+
+    if is_valid_to_source then
+      try_source_file(file_path)
+    end
+
+    touched_file_paths[file_path] = true
+  end
+end
+
 ---@param origin_directory string
 ---@param origin_file_path string
 ---@param patterns string[]
@@ -158,13 +171,7 @@ local function source_patterns(origin_directory, origin_file_path, patterns)
       or expand_relative_pattern(origin_directory, pattern)
 
     if #file_paths ~= 0 then
-      for _, file_path in pairs(file_paths) do
-        if not touched_file_paths[file_path] then
-          try_source_file(file_path)
-        end
-
-        touched_file_paths[file_path] = true
-      end
+      source_file_paths(file_paths, touched_file_paths)
     else
       log_error(assemble_no_matches_error_message(pattern))
     end
