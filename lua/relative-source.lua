@@ -113,12 +113,17 @@ local function get_script_directory()
 end
 
 ---@return string
-local function get_parent_directory()
-  return find_file('%:p:h')
+local function find_script_file_path()
+  return find_file('<sfile>:p')
 end
 
 ---@return string
-local function find_origin()
+local function find_origin_file_path()
+  return find_file('%:p')
+end
+
+---@return string
+local function find_origin_directory()
   local script_directory = get_script_directory()
 
   return is_null_or_empty(script_directory)
@@ -139,15 +144,18 @@ local function try_source_file(file_path)
   return success
 end
 
----@param origin string
+---@param origin_directory string
+---@param origin_file_path string
 ---@param patterns string[]
-local function source_patterns(origin, patterns)
+local function source_patterns(origin_directory, origin_file_path, patterns)
   local processed_files = {
+    [origin_file_path] = true
   }
+
   for _, pattern in pairs(patterns) do
     local file_paths = is_absolute(pattern)
       and expand_absolute_pattern(pattern)
-      or expand_relative_pattern(origin, pattern)
+      or expand_relative_pattern(origin_directory, pattern)
 
     if #file_paths ~= 0 then
       for _, file_path in pairs(file_paths) do
@@ -164,9 +172,11 @@ end
 
 ---@param patterns string[]
 function M.source(patterns)
-  local origin = find_origin()
-
-  source_patterns(origin, patterns)
+  source_patterns(
+    find_origin_directory(),
+    find_origin_file_path(),
+    patterns
+  )
 end
 
 ---@param patterns string[]
