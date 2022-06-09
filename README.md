@@ -82,46 +82,6 @@ require('relative-source').source {
 }
 ```
 
-`activate-plugins.vimrc`:
-```vim
-call plug#begin('~/.vim-plug')
-
-  Plug 'EtiamNullam/relative-source.nvim'
-  Plug 'EtiamNullam/vim-todotxt-syntax'
-
-call plug#end()
-```
-
-`setup-vim.vimrc` - example file
-```vim
-set number
-set expandtab
-```
-
-`setup-telescope.lua` - example file
-```lua
-local telescope = require('telescope')
-local actions = require('telescope.actions')
-
-telescope.setup {
-  defaults = {
-    mappings = {
-      i = {
-        ['<Esc>'] = actions.close,
-        ['<C-Space>'] = vim.api.nvim_command('stopinsert'),
-        ['<C-j>'] = actions.preview_scrolling_down,
-        ['<C-k>'] = actions.preview_scrolling_up,
-        ['<C-Down>'] = actions.cycle_history_next,
-        ['<C-Up>'] = actions.cycle_history_prev,
-      },
-    },
-    path_display = {
-      'truncate',
-    },
-  },
-}
-```
-
 ## Updating
 
 ### Versioning
