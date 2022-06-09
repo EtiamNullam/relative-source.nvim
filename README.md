@@ -136,7 +136,7 @@ Which means given `major`.`minor`.`patch`:
 
 ### Pinning
 
-Branches `v<major>`, `v<major>.<minor>` and `v<major>.<minor>.<patch>` are available to follow so you don't have to worry about plugin breaking on update.
+Branches `v<major>`, `v<major>.<minor>` and tags `v<major>.<minor>.<patch>` are available to follow so you don't have to worry about plugin breaking on update.
 
 #### `vim-plug` examples
 
@@ -155,7 +155,7 @@ Plug 'EtiamNullam/relative-source.nvim', { 'branch': 'v0.2' }
 Pin to specific patch, allowing basically no change:
 
 ```vim
-Plug 'EtiamNullam/relative-source.nvim', { 'branch': 'v0.2.0' }
+Plug 'EtiamNullam/relative-source.nvim', { 'tag': 'v0.2.0' }
 ```
 
 #### Multiple `plug` blocks
